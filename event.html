@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Event Puncak SALAM</title>
+  <title>Event Jelajah</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <style>
@@ -16,7 +16,7 @@
       content: '';
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background-image: linear-gradient(135deg, #d1fae5 25%, #fef3c7 100%);
+      background-image: linear-gradient(135deg, #bfdbfe 25%, #fef3c7 100%);
       z-index: -1;
     }
     @keyframes fadeInUp {
@@ -37,12 +37,12 @@
 </head>
 <body class="font-sans min-h-screen flex flex-col text-gray-800 text-sm animate-fade-in">
 
-  <header class="bg-white/30 text-emerald-900 py-4 shadow-md backdrop-blur-sm border-b border-white/30 animate-fade-in-up">
+  <header class="bg-white/30 text-blue-900 py-4 shadow-md backdrop-blur-sm border-b border-white/30 animate-fade-in-up">
     <div class="text-center space-y-1">
       <h1 class="text-2xl font-bold drop-shadow animate-fade-in-up">
-        <i class="fas fa-star mr-1"></i>Event Puncak SALAM
+        <i class="fas fa-compass mr-1"></i>Event Jelajah
       </h1>
-      <p class="text-xs italic text-emerald-700 animate-fade-in">"Momen istimewa untuk inspirasi dan silaturahmi"</p>
+      <p class="text-xs italic text-blue-700 animate-fade-in">"Eksplorasi, petualangan, dan pengetahuan menyatu"</p>
     </div>
   </header>
 
@@ -78,11 +78,11 @@
 
             setTimeout(() => {
               const card = document.createElement('div');
-              card.className = `bg-white/80 backdrop-blur border border-emerald-200 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in-up`;
+              card.className = `bg-white/80 backdrop-blur border border-blue-200 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in-up`;
 
               card.innerHTML = `
-                <h2 class="text-center text-lg font-semibold text-emerald-800 mb-1 animate-fade-in">
-                  <i class="fas fa-user mr-1 text-emerald-600"></i>${pemateri}
+                <h2 class="text-center text-lg font-semibold text-blue-800 mb-1 animate-fade-in">
+                  <i class="fas fa-user mr-1 text-blue-600"></i>${pemateri}
                 </h2>
                 <div class="text-xs text-gray-600 mb-2 text-center animate-fade-in">
                   <strong>${judul}</strong> &bull; ${tanggal} &bull; ${jam} WIB
