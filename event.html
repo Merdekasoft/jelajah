@@ -82,10 +82,10 @@
 
               card.innerHTML = `
                 <h2 class="text-center text-lg font-semibold text-emerald-800 mb-1 animate-fade-in">
-                  <i class="fas fa-bullhorn mr-1 text-emerald-600"></i>${judul}
+                  <i class="fas fa-user mr-1 text-emerald-600"></i>${pemateri}
                 </h2>
                 <div class="text-xs text-gray-600 mb-2 text-center animate-fade-in">
-                  ${pemateri ? `<strong>${pemateri}</strong> &bull; ` : ''}${tanggal} &bull; ${jam} WIB
+                  <strong>${judul}</strong> &bull; ${tanggal} &bull; ${jam} WIB
                 </div>
                 <p class="text-gray-700 leading-relaxed text-xs text-center animate-fade-in">${deskripsi}</p>
               `;
