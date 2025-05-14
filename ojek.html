@@ -64,8 +64,10 @@
     }
     .product-image {
       width: 100%;
-      height: 200px;
-      object-fit: cover;
+      height: auto;
+      aspect-ratio: 3 / 2;
+      object-fit: contain;
+      background-color: #f9f9f9;
       transition: transform 0.3s ease;
     }
     .product-card:hover .product-image {
@@ -109,19 +111,6 @@
     }
     #load-more {
       display: none;
-      margin: 20px auto 40px auto;
-      padding: 12px 28px;
-      background: #0d6efd;
-      color: white;
-      border: none;
-      border-radius: 30px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-    }
-    #load-more:hover {
-      background-color: #0b5ed7;
     }
     .highlight {
       background-color: yellow;
@@ -138,7 +127,6 @@
 <div id="error" style="display:none;">Terjadi kesalahan saat memuat data.</div>
 <div id="no-results" style="display:none;">Tidak ditemukan layanan ojek sesuai pencarian.</div>
 <div class="product-grid" id="product-container"></div>
-<button id="load-more">Tampilkan Lebih Banyak</button>
 
 <script>
 const tsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSDO6uEso0CauN1esz0_YlSt8bm7ptL42K-4IojzdAaQ28On6cSjiXJe7QnJCgYSUAVUjLxucTyj51q/pub?output=tsv';
@@ -148,23 +136,12 @@ const loadingElement = document.getElementById('loading');
 const errorElement = document.getElementById('error');
 const noResultsElement = document.getElementById('no-results');
 const searchInput = document.getElementById('search-input');
-const loadMoreButton = document.getElementById('load-more');
 
 let allProducts = [];
-let displayedProducts = [];
-let currentPage = 0;
-const productsPerPage = 8;
 
 function parseTSV(tsv) {
   const lines = tsv.trim().split('\n');
   return lines.map(line => line.split('\t'));
-}
-
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
 }
 
 function getLabel(title) {
@@ -186,35 +163,23 @@ function highlight(text, keyword) {
   return escapeHtml(text).replace(regex, '<span class="highlight">$1</span>');
 }
 
-function displayProducts() {
-  const start = currentPage * productsPerPage;
-  const end = start + productsPerPage;
-  const toDisplay = displayedProducts.slice(start, end);
-  const keyword = searchInput.value.toLowerCase();
-
-  toDisplay.forEach(product => {
-    const [title, imageUrl, priceText, link] = product;
-    const price = parseInt(priceText.replace(/[^\d]/g, '')) || 0;
-    const label = getLabel(title);
-    const card = document.createElement('a');
-    card.className = 'product-card';
-    card.href = link || '#';
-    card.target = '_blank';
-    card.innerHTML = `
-      ${label ? `<div class="product-label">${label}</div>` : ''}
-      <img src="${imageUrl || 'https://via.placeholder.com/300x200'}" class="product-image" alt="${title}">
-      <div class="product-card-content">
-        <div class="product-title">${highlight(title, keyword)}</div>
-        <div class="product-price">${price ? 'Rp ' + price.toLocaleString('id-ID') + ' / trip' : 'Harga tidak tersedia'}</div>
-      </div>
-    `;
-    productContainer.appendChild(card);
-  });
-
-  currentPage++;
-  const hasMore = currentPage * productsPerPage < displayedProducts.length;
-  loadMoreButton.style.display = hasMore ? 'block' : 'none';
-  noResultsElement.style.display = displayedProducts.length === 0 ? 'block' : 'none';
+function displaySingleProduct(product, keyword) {
+  const [title, imageUrl, priceText, link] = product;
+  const price = parseInt(priceText.replace(/[^\d]/g, '')) || 0;
+  const label = getLabel(title);
+  const card = document.createElement('a');
+  card.className = 'product-card';
+  card.href = link || '#';
+  card.target = '_blank';
+  card.innerHTML = `
+    ${label ? `<div class="product-label">${label}</div>` : ''}
+    <img src="${imageUrl || 'https://via.placeholder.com/300x200'}" class="product-image" alt="${title}">
+    <div class="product-card-content">
+      <div class="product-title">${highlight(title, keyword)}</div>
+      <div class="product-price">${price ? 'Rp ' + price.toLocaleString('id-ID') + ' / trip' : 'Harga tidak tersedia'}</div>
+    </div>
+  `;
+  productContainer.appendChild(card);
 }
 
 function loadProducts() {
@@ -223,10 +188,8 @@ function loadProducts() {
     .then(tsv => {
       const data = parseTSV(tsv);
       allProducts = [...new Map(data.slice(1).map(p => [p[0], p])).values()];
-      shuffle(allProducts);
-      displayedProducts = [...allProducts];
       loadingElement.style.display = 'none';
-      displayProducts();
+      updateDisplayedProducts();
     })
     .catch(err => {
       loadingElement.style.display = 'none';
@@ -235,17 +198,22 @@ function loadProducts() {
     });
 }
 
-searchInput.addEventListener('input', () => {
+function updateDisplayedProducts() {
   const keyword = searchInput.value.toLowerCase();
   productContainer.innerHTML = '';
-  currentPage = 0;
-  displayedProducts = allProducts.filter(p => p[0].toLowerCase().includes(keyword));
-  displayProducts();
-});
+  const filtered = keyword
+    ? allProducts.filter(p => p[0].toLowerCase().includes(keyword)).slice(0, 1)
+    : allProducts.slice(0, 1); // default tampil 1 produk pertama
 
-loadMoreButton.addEventListener('click', () => {
-  displayProducts();
-});
+  if (filtered.length > 0) {
+    displaySingleProduct(filtered[0], keyword);
+    noResultsElement.style.display = 'none';
+  } else {
+    noResultsElement.style.display = 'block';
+  }
+}
+
+searchInput.addEventListener('input', updateDisplayedProducts);
 
 loadProducts();
 </script>
