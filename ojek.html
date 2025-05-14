@@ -3,220 +3,189 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ojek Jelajah</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>Roda Ojek Pangkalan</title>
   <style>
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      background: linear-gradient(to bottom right, #fdfbfb, #ebedee);
       margin: 0;
-      padding: 0;
-      background-color: #f0f2f5;
-      color: #333;
+      padding: 20px;
     }
-    #search-bar {
-      position: sticky;
-      top: 0;
-      background: #ffffff;
-      padding: 15px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      z-index: 999;
+
+    h1 {
+      font-size: 3vw;
+      color: #2c3e50;
     }
-    #search-input {
-      width: 100%;
-      max-width: 600px;
-      padding: 12px 20px;
-      border: 1px solid #ccc;
-      border-radius: 30px;
-      font-size: 16px;
-      display: block;
-      margin: 0 auto;
-      transition: border-color 0.3s ease;
-    }
-    #search-input:focus {
-      outline: none;
-      border-color: #0d6efd;
-    }
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 24px;
-      padding: 30px 20px;
-    }
-    .product-card {
-      background: white;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    .wheel-wrapper {
       position: relative;
-      text-decoration: none;
-      color: inherit;
+      margin: 40px auto;
+      width: 80vw;
+      max-width: 400px;
     }
-    .product-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-    }
-    .product-image {
+
+    canvas {
       width: 100%;
       height: auto;
-      aspect-ratio: 3 / 2;
-      object-fit: contain;
-      background-color: #f9f9f9;
-      transition: transform 0.3s ease;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
-    .product-card:hover .product-image {
-      transform: scale(1.03);
-    }
-    .product-card-content {
-      padding: 20px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .product-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: #222;
-      min-height: 40px;
-    }
-    .product-price {
-      font-size: 18px;
-      color: #20c997;
-      font-weight: 700;
-    }
-    .product-label {
+
+    .pointer {
       position: absolute;
-      background: #0d6efd;
-      color: white;
-      padding: 6px 12px;
-      font-size: 12px;
-      top: 12px;
-      left: 12px;
-      border-radius: 999px;
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%) rotate(180deg);
+      width: 0;
+      height: 0;
+      border-left: 30px solid transparent;
+      border-right: 30px solid transparent;
+      border-top: 40px solid red;
+      z-index: 2;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 16px 36px;
+      font-size: 1.1rem;
       font-weight: 600;
+      border: none;
+      background: linear-gradient(to right, #0984e3, #6c5ce7);
+      color: white;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(108, 92, 231, 0.3);
+      transition: all 0.3s ease;
     }
-    #loading, #error, #no-results {
-      text-align: center;
-      padding: 30px;
-      font-style: italic;
-      font-size: 16px;
-      color: #555;
+
+    button:hover {
+      background: linear-gradient(to right, #6c5ce7, #0984e3);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(108, 92, 231, 0.4);
     }
-    #load-more {
-      display: none;
+
+    button:active {
+      transform: scale(0.98);
+      box-shadow: 0 4px 10px rgba(108, 92, 231, 0.2);
     }
-    .highlight {
-      background-color: yellow;
+
+    #result {
+      margin-top: 20px;
+      font-size: 1.4rem;
+      color: #34495e;
+      font-weight: bold;
+    }
+
+    @media (max-width: 500px) {
+      h1 {
+        font-size: 5vw;
+      }
+      button {
+        font-size: 5vw;
+        padding: 10px 20px;
+      }
+      #result {
+        font-size: 5vw;
+      }
     }
   </style>
 </head>
 <body>
+  <h1>🛵 Roda Ojek Pangkalan 🛵</h1>
+  <div class="wheel-wrapper">
+    <div class="pointer"></div>
+    <canvas id="wheel"></canvas>
+  </div>
+  <button onclick="spin()">🎯 Cari Driver</button>
+  <div id="result"></div>
 
-<div id="search-bar">
-  <input type="text" id="search-input" placeholder="Cari driver..">
-</div>
+  <script>
+    const driverList = [
+      "Pak Ujang", "Bang Roby", "Kang Dedi", "Om Anto",
+      "Mas Budi", "Pak Heri", "Coba Lagi", "Tunggu Sebentar"
+    ];
 
-<div id="loading">Memuat layanan ojek...</div>
-<div id="error" style="display:none;">Terjadi kesalahan saat memuat data.</div>
-<div id="no-results" style="display:none;">Tidak ditemukan layanan ojek sesuai pencarian.</div>
-<div class="product-grid" id="product-container"></div>
+    const colors = ["#00b894", "#55efc4", "#81ecec", "#74b9ff", "#a29bfe", "#ffeaa7", "#fab1a0", "#fd79a8"];
+    const canvas = document.getElementById("wheel");
+    const ctx = canvas.getContext("2d");
+    const result = document.getElementById("result");
+    let isSpinning = false;
+    let currentRotation = 0;
 
-<script>
-const tsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSDO6uEso0CauN1esz0_YlSt8bm7ptL42K-4IojzdAaQ28On6cSjiXJe7QnJCgYSUAVUjLxucTyj51q/pub?output=tsv';
+    function resizeCanvas() {
+      const size = canvas.clientWidth;
+      canvas.width = size;
+      canvas.height = size;
+    }
 
-const productContainer = document.getElementById('product-container');
-const loadingElement = document.getElementById('loading');
-const errorElement = document.getElementById('error');
-const noResultsElement = document.getElementById('no-results');
-const searchInput = document.getElementById('search-input');
+    function drawWheel(angleOffset = 0) {
+      resizeCanvas();
+      const center = canvas.width / 2;
+      const radius = center;
+      const arc = 2 * Math.PI / driverList.length;
 
-let allProducts = [];
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-function parseTSV(tsv) {
-  const lines = tsv.trim().split('\n');
-  return lines.map(line => line.split('\t'));
-}
+      for (let i = 0; i < driverList.length; i++) {
+        const startAngle = i * arc + angleOffset;
+        ctx.beginPath();
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.moveTo(center, center);
+        ctx.arc(center, center, radius, startAngle, startAngle + arc, false);
+        ctx.lineTo(center, center);
+        ctx.fill();
 
-function getLabel(title) {
-  const lower = title.toLowerCase();
-  if (lower.includes('terdekat')) return 'Terdekat';
-  if (lower.includes('baru')) return 'Baru';
-  if (lower.includes('populer')) return 'Populer';
-  return '';
-}
+        ctx.save();
+        ctx.translate(center, center);
+        ctx.rotate(startAngle + arc / 2);
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#000";
+        ctx.font = `${Math.floor(radius * 0.08)}px sans-serif`;
+        ctx.fillText(driverList[i], radius * 0.55, 0);
+        ctx.restore();
+      }
+    }
 
-function escapeHtml(str) {
-  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-            .replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
-}
+    drawWheel();
+    window.addEventListener('resize', () => drawWheel(currentRotation));
 
-function highlight(text, keyword) {
-  if (!keyword) return escapeHtml(text);
-  const regex = new RegExp(`(${keyword})`, 'gi');
-  return escapeHtml(text).replace(regex, '<span class="highlight">$1</span>');
-}
+    function spin() {
+      if (isSpinning) return;
+      isSpinning = true;
+      const rotation = 3600 + Math.random() * 720;
+      const duration = 5000;
+      const arc = 360 / driverList.length;
+      let start = null;
 
-function displaySingleProduct(product, keyword) {
-  const [title, imageUrl, priceText, link] = product;
-  const price = parseInt(priceText.replace(/[^\d]/g, '')) || 0;
-  const label = getLabel(title);
-  const card = document.createElement('a');
-  card.className = 'product-card';
-  card.href = link || '#';
-  card.target = '_blank';
-  card.innerHTML = `
-    ${label ? `<div class="product-label">${label}</div>` : ''}
-    <img src="${imageUrl || 'https://via.placeholder.com/300x200'}" class="product-image" alt="${title}">
-    <div class="product-card-content">
-      <div class="product-title">${highlight(title, keyword)}</div>
-      <div class="product-price">${price ? 'Rp ' + price.toLocaleString('id-ID') + ' / trip' : 'Harga tidak tersedia'}</div>
-    </div>
-  `;
-  productContainer.appendChild(card);
-}
+      function animate(timestamp) {
+        if (!start) start = timestamp;
+        const progress = timestamp - start;
+        const ease = 1 - Math.pow(1 - progress / duration, 3);
+        currentRotation = ease * rotation;
+        drawWheel(currentRotation * Math.PI / 180);
 
-function loadProducts() {
-  fetch(tsvUrl)
-    .then(response => response.text())
-    .then(tsv => {
-      const data = parseTSV(tsv);
-      allProducts = [...new Map(data.slice(1).map(p => [p[0], p])).values()];
-      loadingElement.style.display = 'none';
-      updateDisplayedProducts();
-    })
-    .catch(err => {
-      loadingElement.style.display = 'none';
-      errorElement.style.display = 'block';
-      console.error(err);
-    });
-}
+        if (progress < duration) {
+          requestAnimationFrame(animate);
+        } else {
+          isSpinning = false;
+          const finalAngle = currentRotation % 360;
+          const correctedAngle = (360 - finalAngle + 90) % 360;
+          const selectedIndex = Math.floor(correctedAngle / arc);
+          const selectedDriver = driverList[selectedIndex];
+          
+          if (selectedDriver === "Coba Lagi" || selectedDriver === "Tunggu Sebentar") {
+            result.innerText = `😅 ${selectedDriver}! Silakan putar lagi untuk mendapatkan driver ojek.`;
+          } else {
+            result.innerText = `🛵 Kamu dijemput oleh ${selectedDriver}! Siap-siap berangkat ya!`;
+          }
+        }
+      }
 
-function updateDisplayedProducts() {
-  const keyword = searchInput.value.toLowerCase();
-  productContainer.innerHTML = '';
-  const filtered = keyword
-    ? allProducts.filter(p => p[0].toLowerCase().includes(keyword)).slice(0, 1)
-    : allProducts.slice(0, 1); // default tampil 1 produk pertama
-
-  if (filtered.length > 0) {
-    displaySingleProduct(filtered[0], keyword);
-    noResultsElement.style.display = 'none';
-  } else {
-    noResultsElement.style.display = 'block';
-  }
-}
-
-searchInput.addEventListener('input', updateDisplayedProducts);
-
-loadProducts();
-</script>
-
+      requestAnimationFrame(animate);
+    }
+  </script>
 </body>
 </html>
