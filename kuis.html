@@ -3,79 +3,112 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kuis Benar atau Salah - Kelas 1 SD</title>
+  <title>Kuis Jelajah</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
     }
+
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
-      background: #f5f7fa;
+      background: #f0f0f0;
+      font-family: 'Roboto', 'Segoe UI', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
     }
+
     .container {
-      background: white;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      width: 90%;
-      max-width: 500px;
+      background: #ffffff;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      width: 95%;
+      max-width: 480px;
     }
+
     h1 {
       text-align: center;
-      color: #333;
-    }
-    .question {
-      font-size: 22px;
-      margin: 20px 0;
-      color: #444;
-    }
-    .btn-group {
-      display: flex;
-      justify-content: space-around;
+      color: #222;
+      font-weight: 500;
+      font-size: 24px;
       margin-bottom: 20px;
     }
+
+    .question {
+      font-size: 18px;
+      margin: 16px 0;
+      text-align: center;
+      color: #444;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
     button {
-      padding: 12px 24px;
+      flex: 1;
+      padding: 12px;
       font-size: 16px;
       border: none;
-      border-radius: 8px;
+      border-radius: 4px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background 0.3s ease;
+      color: #fff;
     }
+
+    .btn-true {
+      background-color: #33b5e5;
+    }
+
+    .btn-false {
+      background-color: #ff4444;
+    }
+
     button:hover {
       opacity: 0.9;
     }
-    button:first-child {
-      background-color: #4CAF50;
-      color: white;
-    }
-    button:last-child {
-      background-color: #F44336;
-      color: white;
-    }
+
     .result {
-      font-weight: bold;
       text-align: center;
-      font-size: 18px;
-      color: #222;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 480px) {
+      .question {
+        font-size: 16px;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 10px;
+      }
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>Kuis Benar atau Salah</h1>
+  <h1>Kuis Jelajah</h1>
   <div id="quiz">
     <div id="question" class="question">Memuat soal...</div>
     <div class="btn-group">
-      <button onclick="checkAnswer('Benar')">Benar</button>
-      <button onclick="checkAnswer('Salah')">Salah</button>
+      <button class="btn-true" onclick="checkAnswer('Benar')">
+        <i class="fa-solid fa-check"></i> Benar
+      </button>
+      <button class="btn-false" onclick="checkAnswer('Salah')">
+        <i class="fa-solid fa-xmark"></i> Salah
+      </button>
     </div>
     <div class="result" id="result"></div>
   </div>
@@ -94,15 +127,13 @@
       .then(text => {
         const lines = text.trim().split("\n");
         lines.shift(); // Hapus header
-        questions = lines
-          .map(line => {
-            const [q, a] = line.split("\t");
-            return {
-              question: q?.trim() || '',
-              answer: a?.trim().toLowerCase() || ''
-            };
-          })
-          .filter(item => item.question && item.answer);
+        questions = lines.map(line => {
+          const [q, a] = line.split("\t");
+          return {
+            question: q?.trim() || '',
+            answer: a?.trim().toLowerCase() || ''
+          };
+        }).filter(item => item.question && item.answer);
         showQuestion();
       })
       .catch(err => {
