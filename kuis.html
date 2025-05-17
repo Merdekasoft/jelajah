@@ -17,15 +17,21 @@
       box-sizing: border-box;
     }
 
+    html,
     body {
       margin: 0;
       padding: 0;
+      height: 100%;
       background: #f0f0f0;
       font-family: "Roboto", "Segoe UI", sans-serif;
-      height: 100vh;
+    }
+
+    body {
       display: flex;
       justify-content: center;
       align-items: center;
+      min-height: 100vh;
+      /* supaya container selalu setinggi layar */
     }
 
     .container {
@@ -35,8 +41,10 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
       width: 95%;
       max-width: 480px;
-      height: 100vh;
-      overflow-y: auto;
+
+      /* Buat tinggi container 100vh minus padding */
+      min-height: calc(100vh - 48px);
+
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -55,6 +63,10 @@
       margin: 16px 0;
       text-align: center;
       color: #444;
+      flex-grow: 1; /* agar soal ambil ruang yang cukup */
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .btn-group {
@@ -73,6 +85,11 @@
       cursor: pointer;
       transition: background 0.3s ease;
       color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      user-select: none;
     }
 
     .btn-true {
@@ -93,6 +110,8 @@
       font-weight: bold;
       color: #333;
       margin-top: 12px;
+      min-height: 24px; /* ruang tetap supaya container gak naik turun */
+      user-select: none;
     }
 
     @media (max-width: 480px) {
@@ -113,10 +132,10 @@
     <div id="quiz">
       <div id="question" class="question">Memuat soal...</div>
       <div class="btn-group">
-        <button class="btn-true" onclick="checkAnswer('Benar')">
+        <button class="btn-true" onclick="checkAnswer('benar')">
           <i class="fa-solid fa-check"></i> Benar
         </button>
-        <button class="btn-false" onclick="checkAnswer('Salah')">
+        <button class="btn-false" onclick="checkAnswer('salah')">
           <i class="fa-solid fa-xmark"></i> Salah
         </button>
       </div>
@@ -137,7 +156,7 @@
         .then((response) => response.text())
         .then((text) => {
           const lines = text.trim().split("\n");
-          lines.shift(); // Hapus header
+          lines.shift(); // hapus header
           questions = lines
             .map((line) => {
               const [q, a] = line.split("\t");
