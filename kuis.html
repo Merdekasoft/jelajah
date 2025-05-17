@@ -31,7 +31,6 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      /* supaya container selalu setinggi layar */
     }
 
     .container {
@@ -41,10 +40,7 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
       width: 95%;
       max-width: 480px;
-
-      /* Buat tinggi container 100vh minus padding */
       min-height: calc(100vh - 48px);
-
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -63,7 +59,7 @@
       margin: 16px 0;
       text-align: center;
       color: #444;
-      flex-grow: 1; /* agar soal ambil ruang yang cukup */
+      flex-grow: 1;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -110,7 +106,7 @@
       font-weight: bold;
       color: #333;
       margin-top: 12px;
-      min-height: 24px; /* ruang tetap supaya container gak naik turun */
+      min-height: 24px;
       user-select: none;
     }
 
@@ -180,12 +176,11 @@
           questions[currentQuestion].question;
         document.getElementById("result").innerText = "";
       } else {
-        const finalScore = `Skor kamu: ${score} dari ${questions.length}`;
+        const finalScore = `Skor kamu: ${score} dari ${questions.length * 3}`;
         document.getElementById("quiz").innerHTML = `
           <h2>${finalScore}</h2>
           <p>Terima kasih sudah bermain!</p>
         `;
-        // Kirim skor ke Kodular
         if (window.AppInventor) {
           window.AppInventor.setWebViewString(finalScore);
         }
@@ -197,8 +192,13 @@
       if (!current) return;
       const correct = current.answer.toLowerCase();
       if (userAnswer.toLowerCase() === correct) {
-        score++;
+        score += 3; // ✅ Tambah 3 poin
         document.getElementById("result").innerText = "✅ Benar!";
+        
+        // Kirim skor ke Kodular saat benar
+        if (window.AppInventor) {
+          window.AppInventor.setWebViewString(String(score));
+        }
       } else {
         document.getElementById("result").innerText = "❌ Salah!";
       }
