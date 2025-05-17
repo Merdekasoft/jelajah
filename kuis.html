@@ -152,7 +152,7 @@
         .then((response) => response.text())
         .then((text) => {
           const lines = text.trim().split("\n");
-          lines.shift(); // hapus header
+          lines.shift(); // Hapus header
           questions = lines
             .map((line) => {
               const [q, a] = line.split("\t");
@@ -181,8 +181,10 @@
           <h2>${finalScore}</h2>
           <p>Terima kasih sudah bermain!</p>
         `;
+
+        // Kirim skor akhir ke Kodular (AppInventor) setelah selesai
         if (window.AppInventor) {
-          window.AppInventor.setWebViewString(finalScore);
+          window.AppInventor.setWebViewString(String(score));
         }
       }
     }
@@ -192,13 +194,8 @@
       if (!current) return;
       const correct = current.answer.toLowerCase();
       if (userAnswer.toLowerCase() === correct) {
-        score += 3; // ✅ Tambah 3 poin
+        score += 3;
         document.getElementById("result").innerText = "✅ Benar!";
-        
-        // Kirim skor ke Kodular saat benar
-        if (window.AppInventor) {
-          window.AppInventor.setWebViewString(String(score));
-        }
       } else {
         document.getElementById("result").innerText = "❌ Salah!";
       }
