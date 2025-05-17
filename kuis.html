@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Benar atau Salah - Kelas 1 SD</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 500px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .question {
+      font-size: 22px;
+      margin: 20px 0;
+      color: #444;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    button:first-child {
+      background-color: #4CAF50;
+      color: white;
+    }
+    button:last-child {
+      background-color: #F44336;
+      color: white;
+    }
+    .result {
+      font-weight: bold;
+      text-align: center;
+      font-size: 18px;
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Kuis Benar atau Salah</h1>
+  <div id="quiz">
+    <div id="question" class="question">Memuat soal...</div>
+    <div class="btn-group">
+      <button onclick="checkAnswer('Benar')">Benar</button>
+      <button onclick="checkAnswer('Salah')">Salah</button>
+    </div>
+    <div class="result" id="result"></div>
+  </div>
+</div>
+
+<script>
+  const dataUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR67K7U_-Svp0okawJ5feRWnUsaAPuDLqOZ7lyA8nqJ6zbO1_65W2-dvm7NUkBReJdVhMvUWuSQUS58/pub?gid=0&single=true&output=tsv";
+
+  let questions = [];
+  let currentQuestion = 0;
+  let score = 0;
+
+  function loadTSV(url) {
+    fetch(url)
+      .then(response => response.text())
+      .then(text => {
+        const lines = text.trim().split("\n");
+        lines.shift(); // Hapus header
+        questions = lines
+          .map(line => {
+            const [q, a] = line.split("\t");
+            return {
+              question: q?.trim() || '',
+              answer: a?.trim().toLowerCase() || ''
+            };
+          })
+          .filter(item => item.question && item.answer);
+        showQuestion();
+      })
+      .catch(err => {
+        document.getElementById("question").innerText = "Gagal memuat soal.";
+        console.error(err);
+      });
+  }
+
+  function showQuestion() {
+    if (currentQuestion < questions.length) {
+      document.getElementById("question").innerText = questions[currentQuestion].question;
+      document.getElementById("result").innerText = "";
+    } else {
+      const finalScore = `Skor kamu: ${score} dari ${questions.length}`;
+      document.getElementById("quiz").innerHTML = `
+        <h2>${finalScore}</h2>
+        <p>Terima kasih sudah bermain!</p>
+      `;
+      // Kirim skor ke Kodular
+      if (window.AppInventor) {
+        window.AppInventor.setWebViewString(finalScore);
+      }
+    }
+  }
+
+  function checkAnswer(userAnswer) {
+    const current = questions[currentQuestion];
+    if (!current) return;
+    const correct = current.answer.toLowerCase();
+    if (userAnswer.toLowerCase() === correct) {
+      score++;
+      document.getElementById("result").innerText = "✅ Benar!";
+    } else {
+      document.getElementById("result").innerText = "❌ Salah!";
+    }
+    currentQuestion++;
+    setTimeout(showQuestion, 1000);
+  }
+
+  loadTSV(dataUrl);
+</script>
+
+</body>
+</html>
