@@ -147,13 +147,20 @@
     let currentQuestion = 0;
     let score = 0;
 
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
     function loadTSV(url) {
       fetch(url)
         .then((response) => response.text())
         .then((text) => {
           const lines = text.trim().split("\n");
           lines.shift(); // Hapus header
-          questions = lines
+          let allQuestions = lines
             .map((line) => {
               const [q, a] = line.split("\t");
               return {
@@ -162,6 +169,9 @@
               };
             })
             .filter((item) => item.question && item.answer);
+
+          shuffleArray(allQuestions);
+          questions = allQuestions.slice(0, 10); // Ambil 10 pertanyaan acak
           showQuestion();
         })
         .catch((err) => {
@@ -182,7 +192,7 @@
           <p>Terima kasih sudah bermain!</p>
         `;
 
-        // Kirim skor akhir ke Kodular (AppInventor) setelah selesai
+        // Kirim skor ke AppInventor/Kodular jika digunakan
         if (window.AppInventor) {
           window.AppInventor.setWebViewString(String(score));
         }
